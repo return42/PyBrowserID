@@ -6,12 +6,13 @@
 import time
 import warnings
 
+import unittest
 from mock import Mock, patch
 
 import browserid
 from browserid.tests.support import (patched_supportdoc_fetching,
                                      get_keypair,
-                                     make_assertion, unittest, callwith)
+                                     make_assertion, callwith)
 from browserid import jwt
 from browserid import RemoteVerifier, LocalVerifier
 from browserid.supportdoc import FIFOCache, SupportDocumentManager
@@ -19,11 +20,14 @@ from browserid.verifiers.workerpool import WorkerPoolVerifier
 from browserid.utils import (encode_json_bytes,
                              decode_json_bytes,
                              bundle_certs_and_assertion)
+
 from browserid.errors import (TrustError,
-                              ConnectionError,
                               ExpiredSignatureError,
                               InvalidSignatureError,
                               AudienceMismatchError)
+
+from browserid.errors import ConnectionError # pylint: disable=W0622
+
 
 # This is an old assertion I generated on myfavoritebeer.org.
 # It's expired and signed with an old private key.
@@ -106,7 +110,7 @@ class VerifierTestCases(object):
         assertion = encode_json_bytes({})
         self.assertRaises(errors, self.verifier.verify, assertion)
         # This one has no certificates
-        pub, priv = get_keypair("TEST")
+        _pub, priv = get_keypair("TEST")
         assertion = bundle_certs_and_assertion(
             [],
             jwt.generate({"aud": "TEST"}, priv),

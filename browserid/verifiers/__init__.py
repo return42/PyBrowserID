@@ -6,14 +6,11 @@ import sys
 import re
 import fnmatch
 
+import six
+
 from browserid.errors import AudienceMismatchError
 from browserid.utils import (unbundle_certs_and_assertion,
                              decode_json_bytes)
-
-
-if sys.version_info > (3,):
-    basestring = (str,)
-
 
 class Verifier(object):
     """Abstract base class for verifying BrowserID assertions."""
@@ -64,7 +61,7 @@ class Verifier(object):
         """Compile a list of audience patterns into a regular expression."""
         if not audiences:
             return None
-        if isinstance(audiences, basestring):
+        if isinstance(audiences, six.string_types):
             audiences = (audiences,)
         regexps = []
         for pattern in audiences:
