@@ -7,10 +7,11 @@
 #
 #  We use ctypes to avoid recompiling the M2Crypto binaries.
 
-import ctypes
-from M2Crypto import RSA, DSA, m2, __m2crypto
 
-_m2lib = ctypes.CDLL(__m2crypto.__file__)
+import ctypes
+from M2Crypto import RSA, DSA, m2, _m2crypto
+
+_m2lib = ctypes.CDLL(_m2crypto.__file__)
 
 
 _m2lib.BN_free.argtypes = (ctypes.c_void_p,)
@@ -106,7 +107,7 @@ if "sign" not in RSA.RSA_pub.__dict__:
 
 
 @maybe_provide(DSA)
-def load_pub_key_params(p, q, g, pub):
+def load_pub_key_params(p, q, g, pub): # pylint: disable=C0103
     """Create a DSA_pub object from parameters and key."""
     dsa = m2.dsa_new()
     m2.dsa_set_p(dsa, p)
@@ -117,7 +118,7 @@ def load_pub_key_params(p, q, g, pub):
 
 
 @maybe_provide(DSA)
-def load_key_params(p, q, g, pub, priv):
+def load_key_params(p, q, g, pub, priv): # pylint: disable=C0103
     """Create a DSA object from parameters and key."""
     dsa = m2.dsa_new()
     m2.dsa_set_p(dsa, p)

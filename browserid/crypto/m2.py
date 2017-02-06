@@ -22,6 +22,12 @@ from browserid.crypto._m2_monkeypatch import m2
 from browserid.crypto._m2_monkeypatch import DSA as _DSA
 from browserid.crypto._m2_monkeypatch import RSA as _RSA
 
+import six
+
+_long = int
+if six.PY2:
+    _long = long  # pylint: disable=E0602
+
 
 class Key(object):
     """Generic base class for Key objects."""
@@ -33,7 +39,7 @@ class Key(object):
         """Alternative constructor for loading from PEM format data."""
         self = cls.__new__(cls)
         if data is not None:
-            bio = BIO.MemoryBuffer(str(data))
+            bio = BIO.MemoryBuffer(data)
         elif filename is not None:
             bio = BIO.openfile(filename) # pylint: disable=R0204
         else:
@@ -107,16 +113,16 @@ class DSKey(Key):
 
     def __init__(self, data):
         _check_keys(data, ('p', 'q', 'g', 'y'))
-        self.p = p = long(data["p"], 16)
-        self.q = q = long(data["q"], 16)
-        self.g = g = long(data["g"], 16)
-        self.y = y = long(data["y"], 16)
+        self.p = p = _long(data["p"], 16)
+        self.q = q = _long(data["q"], 16)
+        self.g = g = _long(data["g"], 16)
+        self.y = y = _long(data["y"], 16)
         if "x" not in data:
             self.x = None
             self.keyobj = _DSA.load_pub_key_params(int2mpint(p), int2mpint(q),
                                                    int2mpint(g), int2mpint(y))
         else:
-            self.x = x = long(data["x"], 16)
+            self.x = x = _long(data["x"], 16)
             self.keyobj = _DSA.load_key_params(int2mpint(p), int2mpint(q),
                                                int2mpint(g), int2mpint(y),
                                                int2mpint(x))
@@ -131,6 +137,7 @@ class DSKey(Key):
         self.x = None
         return self
 
+    # pylint: disable=R0801
     def verify(self, signed_data, signature):
         # Restore any leading zero bytes that might have been stripped.
         signature = hexlify(signature)
@@ -139,8 +146,8 @@ class DSKey(Key):
         if len(signature) != hexlength * 2:
             return False
         # Split the signature into "r" and "s" components.
-        r = long(signature[:hexlength], 16)
-        s = long(signature[hexlength:], 16)
+        r = _long(signature[:hexlength], 16)
+        s = _long(signature[hexlength:], 16)
         if r <= 0 or r >= self.q:
             return False
         if s <= 0 or s >= self.q:
@@ -176,18 +183,17 @@ def int2mpint(x):
     hexbytes = hex(x)[2:].rstrip("L").encode("ascii")
     if len(hexbytes) % 2:
         hexbytes = b"0" + hexbytes
-    bytes = unhexlify(hexbytes)
+    _bytes = unhexlify(hexbytes)
     # Add an extra significant byte that's just zero.  I think this is only
     # necessary if the number has its MSB set, to prevent it being mistaken
     # for a sign bit.  I do it uniformly since it's valid and simpler.
-    return struct.pack(">I", len(bytes) + 1) + b"\x00" + bytes
+    return struct.pack(">I", len(_bytes) + 1) + b"\x00" + _bytes
 
 
 def mpint2int(data):
     """Convert a string in OpenSSL's MPINT format to a Python long integer."""
     hexbytes = hexlify(data[4:])
-    return long(hexbytes, 16)
-
+    return _long(hexbytes, 16)
 
 def _check_keys(data, keys):
     """Verify that the given data dict contains the specified keys."""

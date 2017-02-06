@@ -5,9 +5,10 @@
 
 import os
 import tempfile
+import unittest
 from binascii import hexlify
 
-from browserid.tests.support import get_keypair, unittest
+from browserid.tests.support import get_keypair
 from browserid.utils import encode_json_bytes, encode_bytes, to_int, to_hex
 from browserid import jwt
 
@@ -45,15 +46,6 @@ class FALLBACK_DS128Key(browserid.crypto.fallback.DSKey):
 class FALLBACK_DS256Key(browserid.crypto.fallback.DSKey):
     BITLENGTH = jwt.DS256Key.BITLENGTH
     HASHMOD = jwt.DS256Key.HASHMOD
-
-
-def _long(value):
-    return long(value.replace(" ", "").replace("\n", "").strip())
-
-
-def _hex(value):
-    return hex(long(value.replace(" ", "").replace("\n", "").strip()))
-
 
 # These are dummy key data that I generated via PyCrypto.
 # M2Crypto doesn't seem to let me get at the individual parameters.

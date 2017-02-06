@@ -2,9 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from browserid.tests.support import unittest
-from browserid.utils import to_int
+# pylint: disable=C0103
 
+import unittest
+from browserid.utils import to_int
 try:
     from browserid.crypto.m2 import int2mpint
     import browserid.crypto._m2_monkeypatch as _m2
@@ -41,17 +42,17 @@ class TestM2MonkeyPatch(unittest.TestCase):
         k = _m2.DSA.gen_params(512)
         k.gen_key()
         _m2.dsa_set_pub(k.dsa, k.pub)
-        self.assertRaises(_m2.DSA.DSAError, _m2.dsa_set_pub, k.dsa, "\x00")
+        self.assertRaises(_m2.DSA.DSAError, _m2.dsa_set_pub, k.dsa, b"\x00")
         _m2.dsa_set_priv(k.dsa, k.priv)
-        self.assertRaises(_m2.DSA.DSAError, _m2.dsa_set_priv, k.dsa, "\x00")
+        self.assertRaises(_m2.DSA.DSAError, _m2.dsa_set_priv, k.dsa, b"\x00")
 
     def test_setting_invalid_data_on_rsa_key(self):
         args = map(int2mpint, (DUMMY_RSA_E, DUMMY_RSA_N, DUMMY_RSA_D))
         k = _m2.RSA.new_key(args)
-        self.assertTrue(k.verify("hello", k.sign("hello")))
+        self.assertTrue(k.verify(b"hello", k.sign(b"hello")))
         _m2.rsa_set_d(k.rsa, int2mpint(DUMMY_RSA_D))
-        self.assertRaises(_m2.RSA.RSAError, _m2.rsa_set_d, k.rsa, "\x00")
-        self.assertTrue(k.verify("hello", k.sign("hello")))
+        self.assertRaises(_m2.RSA.RSAError, _m2.rsa_set_d, k.rsa, b"\x00")
+        self.assertTrue(k.verify(b"hello", k.sign(b"hello")))
 
     def test_dsa_signing_works_with_loaded_keys(self):
         d_orig = _m2.DSA.gen_params(512)
@@ -62,16 +63,16 @@ class TestM2MonkeyPatch(unittest.TestCase):
                                      d_orig.pub, d_orig.priv)
         # Check that the attributes are copied across effectively.
         for nm in ("p", "q", "g", "pub"):
-            self.assertEquals(getattr(d_orig, nm), getattr(d_pub, nm))
-            self.assertEquals(getattr(d_orig, nm), getattr(d_priv, nm))
-        self.assertEquals(d_orig.priv, d_priv.priv)
+            self.assertTrue(getattr(d_orig, nm) == getattr(d_pub, nm))
+            self.assertTrue(getattr(d_orig, nm) == getattr(d_priv, nm))
+        self.assertTrue(d_orig.priv == d_priv.priv)
         # Check that they can all validate signatures from original key.
-        r, s = d_orig.sign("helloworld")
-        self.assertTrue(d_orig.verify("helloworld", r, s))
-        self.assertTrue(d_pub.verify("helloworld", r, s))
-        self.assertTrue(d_priv.verify("helloworld", r, s))
+        r, s = d_orig.sign(b"helloworld")
+        self.assertTrue(d_orig.verify(b"helloworld", r, s))
+        self.assertTrue(d_pub.verify(b"helloworld", r, s))
+        self.assertTrue(d_priv.verify(b"helloworld", r, s))
         # Check that they can all validate signatures from loaded priv key.
-        r, s = d_priv.sign("helloworld")
-        self.assertTrue(d_orig.verify("helloworld", r, s))
-        self.assertTrue(d_pub.verify("helloworld", r, s))
-        self.assertTrue(d_priv.verify("helloworld", r, s))
+        r, s = d_priv.sign(b"helloworld")
+        self.assertTrue(d_orig.verify(b"helloworld", r, s))
+        self.assertTrue(d_pub.verify(b"helloworld", r, s))
+        self.assertTrue(d_priv.verify(b"helloworld", r, s))

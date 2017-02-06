@@ -15,7 +15,7 @@ automatically if you have that package installed.
 
 import os
 from binascii import hexlify, unhexlify
-
+from browserid.crypto.m2 import _check_keys
 
 class Key(object):
     """Generic base class for Key objects."""
@@ -192,11 +192,3 @@ def int2bytes(x):
     if len(hexbytes) % 2:
         hexbytes = b"0" + hexbytes
     return unhexlify(hexbytes)
-
-
-def _check_keys(data, keys):
-    """Verify that the given data dict contains the specified keys."""
-    for key in keys:
-        if not key in data:
-            msg = 'missing %s in data - %s' % (key, str(data.keys()))
-            raise ValueError(msg)
