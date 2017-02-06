@@ -7,20 +7,22 @@ Python library for the BrowserID identity protocol.
 
 """
 
-__ver_major__ = 0
-__ver_minor__ = 11
-__ver_patch__ = 0
-__ver_sub__ = ""
-__ver_tuple__ = (__ver_major__, __ver_minor__, __ver_patch__, __ver_sub__)
-__version__ = "%d.%d.%d%s" % __ver_tuple__
+__version__      = "2.0.0rc1"
+__description__  = "Python library for the BrowserID Protocol"
+__url__          = "https://github.com/mozilla/PyBrowserID"
+__license__      = "MPLv2.0"
+__author__       = 'Mozilla Services'
+__author_email__ = 'dev-identity@lists.mozilla.org'
+__keywords__     = 'authentication browserid login email'
 
-
-from browserid.errors import (Error,  # NOQA
-                              ConnectionError,  # NOQA
-                              TrustError,  # NOAQ
-                              ExpiredSignatureError,  # NOQA
-                              InvalidSignatureError,  # NOQA
-                              AudienceMismatchError)  # NOQA
+from browserid.errors import (  # pylint: disable=W0622
+    Error                    # NOQA
+    , ConnectionError        # NOQA
+    , TrustError             # NOAQ
+    , ExpiredSignatureError  # NOQA
+    , InvalidSignatureError  # NOQA
+    , AudienceMismatchError  # NOQA
+    , )
 
 from browserid.verifiers.remote import RemoteVerifier  # NOQA
 from browserid.verifiers.local import LocalVerifier  # NOQA

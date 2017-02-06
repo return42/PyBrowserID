@@ -1,0 +1,27 @@
+# requires
+
+requests
+six
+
+# FIXME: ATM m2crypto is only available for Py2, This is my workaround to build
+# m2crypto for Py3 also. For this, a local checkout of the 'six' branch from
+#
+#   https://github.com/return42/m2crypto/commits/six
+#
+# is needed.
+#
+# file:../m2crypto#egg=M2Crypto
+# M2Crypto > 0.25.1
+git+https://github.com/return42/m2crypto@six#egg=M2Crypto
+
+
+# develop
+
+pytest
+pytest-cov
+pip
+pylint
+tox
+twine
+wheel
+mock
