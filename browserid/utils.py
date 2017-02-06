@@ -7,15 +7,10 @@ Utility functions for PyBrowserID.
 
 """
 
-import sys
 import json
 import base64
 
-
-if sys.version_info > (3,):
-    long = int
-    unicode = str
-
+import six
 
 def decode_bytes(value):
     """Decode BrowserID's base64 encoding format.
@@ -26,7 +21,7 @@ def decode_bytes(value):
 
     If the value is not correctly encoded, ValueError will be raised.
     """
-    if isinstance(value, unicode):
+    if isinstance(value, six.text_type):
         value = value.encode("ascii")
     pad = len(value) % 4
     if pad == 2:
@@ -48,7 +43,7 @@ def encode_bytes(value):
     meaning we can't use the stdlib routines to encode them directly.  This
     is a simple wrapper that strips the padding.
     """
-    if isinstance(value, unicode):
+    if isinstance(value, six.text_type):
         value = value.encode("ascii")
     return base64.urlsafe_b64encode(value).rstrip(b"=").decode("ascii")
 
@@ -141,24 +136,17 @@ def to_int(value, base=10):
     the given base.  The result will always be a long on python2 and an
     int on python3 (which has not concept of a separate "long" type).
     """
-    if not isinstance(value, str):
-        return long(value)
-    return long(value.replace(" ", "").replace("\n", "").strip(), base)
+    # pylint: disable=E0602
+    if six.PY2:
+        if not isinstance(value, six.string_types):
+            return long(value)
+        return long(value.replace(" ", "").replace("\n", "").strip(), base)
+    else:
+        if not isinstance(value, six.string_types):
+            return int(value)
+        return int(value.replace(" ", "").replace("\n", "").strip(), base)
 
 
 def to_hex(value):
     """Convert the given value to a long encoded into a hex string."""
     return hex(to_int(value))[2:].rstrip("L")
-
-
-def u(value):
-    """Helper function for constructing unicode string literals.
-
-    Use it in lieu of the u"" prefix, like this:
-
-        data = u("unicode string")
-
-    """
-    if sys.version_info < (3,):
-        value = value.decode("unicode-escape")
-    return value
