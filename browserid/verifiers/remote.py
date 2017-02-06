@@ -6,8 +6,8 @@ import json
 
 from browserid import netutils
 from browserid.verifiers import Verifier
+from browserid.errors import ConnectionError # pylint: disable=W0622
 from browserid.errors import (InvalidSignatureError,
-                              ConnectionError,
                               AudienceMismatchError)
 
 BROWSERID_VERIFIER_URL = "https://verifier.login.persona.org/verify"

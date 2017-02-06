@@ -1,6 +1,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
+# pylint: disable=C0103
 
 import time
 import warnings
@@ -88,6 +89,8 @@ EXPIRED_ASSERTION = """
 
 class VerifierTestCases(object):
     """Generic testcases for Verifier implementations."""
+
+    # pylint: disable=E1101
 
     def test_expired_assertion(self):
         self.assertRaises(TrustError, self.verifier.verify, EXPIRED_ASSERTION)
@@ -224,6 +227,8 @@ class TestLocalVerifier(unittest.TestCase, VerifierTestCases):
 
 class TestRemoteVerifier(unittest.TestCase, VerifierTestCases):
 
+    # pylint: disable=W0613
+
     def setUp(self):
         self.verifier = RemoteVerifier(["*"])
 
@@ -240,11 +245,13 @@ class TestRemoteVerifier(unittest.TestCase, VerifierTestCases):
     def test_handling_of_valid_response_from_server(self):
         response_text = ('{"email": "t@m.com", "status": "okay", '
                          '"audience": "http://myfavoritebeer.org"}')
+        # pylint: disable=E1120
         data = self._verify(response_text=response_text)
         self.assertEquals(data["email"], "t@m.com")
 
     def test_handling_of_invalid_json_from_server(self):
         with self.assertRaises(ConnectionError):
+            # pylint: disable=E1120
             self._verify(response_text='SERVER RETURNS INVALID JSON')
 
     @patch('browserid.netutils.requests')
@@ -252,15 +259,18 @@ class TestRemoteVerifier(unittest.TestCase, VerifierTestCases):
         response_text = ('{"email": "t@m.com", "status": "okay", '
                          '"audience": "WRONG"}')
         with self.assertRaises(AudienceMismatchError):
+            # pylint: disable=E1120
             self._verify(response_text=response_text)
 
     @patch('browserid.netutils.requests')
     def test_handling_of_500_error_from_server(self, requests):
         with self.assertRaises(ValueError):
+            # pylint: disable=E1120
             self._verify(status_code=500)
 
     def test_handling_of_503_error_from_server(self):
         with self.assertRaises(ConnectionError):
+            # pylint: disable=E1120
             self._verify(status_code=503)
 
 

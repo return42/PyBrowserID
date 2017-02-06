@@ -51,7 +51,7 @@ class SupportDocumentManager(object):
             error = supportdoc = None
             try:
                 supportdoc = self.fetch_support_document(hostname)
-            except Exception as e:  # NOQA
+            except Exception as e:  # NOQA  # pylint: disable=W0703
                 error = e
             self.cache[hostname] = (error, supportdoc)
         if error is not None:

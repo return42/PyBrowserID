@@ -9,7 +9,7 @@ Utilities for dealing with Signed JSON Web Tokens.
 
 import hashlib
 
-from browserid.crypto import Key, DSKey, RSKey  # NOQA
+from browserid.crypto import DSKey, RSKey  # NOQA
 
 from browserid.utils import decode_bytes, encode_bytes
 from browserid.utils import decode_json_bytes, encode_json_bytes

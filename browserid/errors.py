@@ -13,7 +13,7 @@ class Error(Exception):
     pass
 
 
-class ConnectionError(Error):
+class ConnectionError(Error):   # pylint: disable=W0622
     """Error raised when PyBrowserID fails to connect to a remote server."""
     description = 'Failed to connect to remote server.'
 

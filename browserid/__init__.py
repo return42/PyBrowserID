@@ -39,7 +39,7 @@ def verify(assertion, audience=None):
     best method currently involves POSTing to the hosted verifier service on
     persona.org; eventually it will do local verification.
     """
-    global _DEFAULT_VERIFIER
+    global _DEFAULT_VERIFIER # pylint: disable=W0603
     if _DEFAULT_VERIFIER is None:
         _DEFAULT_VERIFIER = RemoteVerifier()
     return _DEFAULT_VERIFIER.verify(assertion, audience)

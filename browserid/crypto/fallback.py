@@ -1,9 +1,9 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
-"""
+# pylint: disable=C0103
 
-Crypto primitives implemented in pure python.
+"""Crypto primitives implemented in pure python.
 
 This file provides the "slow path" crypto implementation for PyBrowserID.
 It implements everything in pure python, so it's very slow but very portable.
@@ -21,7 +21,7 @@ class Key(object):
     """Generic base class for Key objects."""
 
     @classmethod
-    def from_pem_data(cls, data=None, filename=None):
+    def from_pem_data(cls, data=None, filename=None):  # pylint: disable=W0613
         """Alternative constructor for loading from PEM format data."""
         msg = "PEM data loading is not implemented for pure-python crypto."
         msg += "  Please install M2Crypto to access this functionality."
@@ -84,7 +84,7 @@ class RSKey(Key):
         return padded_digest == self._get_digest(signed_data)
 
     def sign(self, data):
-        n, e, d = self.n, self.e, self.d
+        n, _e, d = self.n, self.e, self.d
         if not d:
             raise ValueError("private key not present")
         c = int(self._get_digest(data), 16)
@@ -92,7 +92,7 @@ class RSKey(Key):
         return int2bytes(m)
 
     def _get_digest(self, data):
-        digest = self.HASHMOD(data).hexdigest().encode("ascii")
+        digest = self.HASHMOD(data).hexdigest().encode("ascii")  # pylint: disable=E1102
         padded_digest = b"00" + RSA_DIGESTINFO_HEADER[self.HASHNAME] + digest
         padding_len = (self.DIGESTSIZE) - 4 - len(padded_digest)
         padded_digest = b"0001" + (b"f" * padding_len) + padded_digest
@@ -121,6 +121,7 @@ class DSKey(Key):
         else:
             self.x = None
 
+    # pylint: disable=R0801
     def verify(self, signed_data, signature):
         p, q, g, y = self.p, self.q, self.g, self.y
         signature = hexlify(signature)
@@ -135,13 +136,13 @@ class DSKey(Key):
         if s <= 0 or s >= q:
             return False
         w = modinv(s, q)
-        u1 = (int(self.HASHMOD(signed_data).hexdigest(), 16) * w) % q
+        u1 = (int(self.HASHMOD(signed_data).hexdigest(), 16) * w) % q # pylint: disable=E1102
         u2 = (r * w) % q
         v = ((pow(g, u1, p) * pow(y, u2, p)) % p) % q
-        return (v == r)
+        return v == r
 
     def sign(self, data):
-        p, q, g, y, x = self.p, self.q, self.g, self.y, self.x
+        p, q, g, _y, x = self.p, self.q, self.g, self.y, self.x
         if not x:
             raise ValueError("private key not present")
         # We need to do lots of if-not-this-then-start-over type tests.
@@ -153,7 +154,7 @@ class DSKey(Key):
             r = pow(g, k, p) % q
             if r == 0:
                 continue
-            h = (int(self.HASHMOD(data).hexdigest(), 16) + (x * r)) % q
+            h = (int(self.HASHMOD(data).hexdigest(), 16) + (x * r)) % q # pylint: disable=E1102
             s = (modinv(k, q) * h) % q
             if s == 0:
                 continue

@@ -29,6 +29,8 @@ BROWSERID_PK_PY = json.loads(BROWSERID_PK)
 
 class TestFetchPublicKey(unittest.TestCase):
 
+    # pylint: disable=W0613
+
     @patch('browserid.netutils.requests')
     def _fetch(self, hostname, requests, well_known_url=None,
                side_effect=None, response_text='', status_code=200):
@@ -55,18 +57,22 @@ class TestFetchPublicKey(unittest.TestCase):
     def test_connection_error(self):
         """If there is an error connecting, raise a ConnectionError."""
         with self.assertRaises(ConnectionError):
+            # pylint: disable=E1120
             self._fetch('test.com', side_effect=RequestException)
         with self.assertRaises(ConnectionError):
+            # pylint: disable=E1120
             self._fetch('test.com', side_effect=socket.error)
 
     @patch('browserid.supportdoc.fetch_support_document')
     def test_missing_support_document(self, fetch):
         with self.assertRaises(InvalidIssuerError):
+            # pylint: disable=E1120
             self._fetch('test.com', status_code=404)
 
     def test_malformed_support_document(self):
         response_text = 'I AINT NO JSON, FOOL!'
         with self.assertRaises(InvalidIssuerError):
+            # pylint: disable=E1120
             self._fetch('test.com', response_text=response_text)
 
     def test_malformed_pub_key_document(self):
@@ -88,9 +94,11 @@ class TestFetchPublicKey(unittest.TestCase):
 
     def test_support_document_with_no_public_key(self):
         with self.assertRaises(InvalidIssuerError):
+            # pylint: disable=E1120
             self._fetch('test.com', response_text='{}')
 
     def test_successful_fetch(self):
+        # pylint: disable=E1120
         key = self._fetch('test.com', response_text=BROWSERID_PK)
         self.assertEquals(key, BROWSERID_PK_PY['public-key'])
 

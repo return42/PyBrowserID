@@ -39,7 +39,7 @@ class LocalVerifier(Verifier):
     def parse_jwt(self, data):
         return jwt.parse(data)
 
-    def verify(self, assertion, audience=None, now=None):
+    def verify(self, assertion, audience=None, now=None): # pylint: disable=W0221
         """Verify the given BrowserID assertion.
 
         This method parses a BrowserID identity assertion, verifies the
@@ -134,6 +134,7 @@ class LocalVerifier(Verifier):
         root_issuer = certificates[0].payload["iss"]
         root_key = self.supportdocs.get_key(root_issuer)
         current_key = root_key
+        cert = None
         for cert in certificates:
             if cert.payload["exp"] < now:
                 raise ExpiredSignatureError("expired certificate in chain")

@@ -12,7 +12,7 @@ import socket
 import requests
 from requests.exceptions import RequestException
 
-from browserid.errors import ConnectionError
+from browserid.errors import ConnectionError  # pylint: disable=W0622
 
 
 def get(url, verify=True):
@@ -20,8 +20,10 @@ def get(url, verify=True):
     return request("GET", url, verify=verify)
 
 
-def post(url, data={}, verify=True):
+def post(url, data=None, verify=True):
     """Fetch the specified URL with a POST request."""
+    if data is None:
+        data = {}
     return request("POST", url, data=data, verify=verify)
 
 

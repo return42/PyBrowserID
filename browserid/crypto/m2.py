@@ -1,9 +1,9 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
-"""
+# pylint: disable=C0103
 
-Crypto primitives built on top of M2Crypto.
+"""Crypto primitives built on top of M2Crypto.
 
 This file provides the "fast path" crypto implementation for PyBrowserID.
 It uses the public-key-crypto routines from M2Crypto for nice fast operation.
@@ -35,11 +35,11 @@ class Key(object):
         if data is not None:
             bio = BIO.MemoryBuffer(str(data))
         elif filename is not None:
-            bio = BIO.openfile(filename)
+            bio = BIO.openfile(filename) # pylint: disable=R0204
         else:
             msg = "Please specify either 'data' or 'filename' argument."
             raise ValueError(msg)
-        self.keyobj = self.KEY_MODULE.load_pub_key_bio(bio)
+        self.keyobj = self.KEY_MODULE.load_pub_key_bio(bio)  # pylint: disable=W0201
         return self
 
     def to_pem_data(self):
@@ -83,14 +83,14 @@ class RSKey(Key):
             self.keyobj = _RSA.new_key((e, n, d))
 
     def verify(self, signed_data, signature):
-        digest = self.HASHMOD(signed_data).digest()
+        digest = self.HASHMOD(signed_data).digest()  # pylint: disable=E1102
         try:
             return self.keyobj.verify(digest, signature, self.HASHNAME)
         except _RSA.RSAError:
             return False
 
     def sign(self, data):
-        digest = self.HASHMOD(data).digest()
+        digest = self.HASHMOD(data).digest()  # pylint: disable=E1102
         return self.keyobj.sign(digest, self.HASHNAME)
 
 
@@ -146,13 +146,13 @@ class DSKey(Key):
         if s <= 0 or s >= self.q:
             return False
         # Now we can check the digest.
-        digest = self.HASHMOD(signed_data).digest()
+        digest = self.HASHMOD(signed_data).digest()  # pylint: disable=E1102
         return self.keyobj.verify(digest, int2mpint(r), int2mpint(s))
 
     def sign(self, data):
         if not self.x:
             raise ValueError("private key not present")
-        digest = self.HASHMOD(data).digest()
+        digest = self.HASHMOD(data).digest()  # pylint: disable=E1102
         r, s = self.keyobj.sign(digest)
         # We need precisely "bytelength" bytes from each integer.
         # M2Crypto might give us more or less, so snip and pad appropriately.

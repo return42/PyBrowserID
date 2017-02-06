@@ -2,6 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# pylint: disable=R0913,R0914
+
 import time
 import hashlib
 from contextlib import contextmanager
@@ -11,13 +13,6 @@ from browserid.utils import (encode_bytes, bundle_certs_and_assertion,
 
 from browserid import supportdoc
 from browserid import jwt
-
-# if unittest2 isn't available, assume that we are python 2.7
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest  # NOQA
-
 
 # These are values used to generate dummy DSA keys.
 # I took them directly from the javacript jwcrypto source code, which claims:
@@ -44,7 +39,7 @@ DUMMY_G = to_int("""
 """, 16)
 
 
-def fetch_support_document(hostname, verify=None):
+def fetch_support_document(hostname, verify=None): # pylint: disable=W0613
     """Fetch the BrowserID support document for the given hostname.
 
     Actually, this implementation generates a key locally based on
@@ -112,6 +107,7 @@ def make_assertion(email, audience, issuer=None, exp=None,
     By specifying the "exp", "assertion_sig" or "certificate_sig" arguments
     it is possible generate invalid assertions for testing purposes.
     """
+    # pylint: disable=R0204
     if issuer is None:
         issuer = "login.persona.org"
     if exp is None:
@@ -123,7 +119,7 @@ def make_assertion(email, audience, issuer=None, exp=None,
     # Get private key for the hostname so we can sign it.
     if issuer_keypair is None:
         issuer_keypair = get_keypair(issuer)
-    iss_pub, iss_priv = issuer_keypair
+    _iss_pub, iss_priv = issuer_keypair
 
     # Generate the assertion, signed with email's public key.
     assertion = {
@@ -160,8 +156,8 @@ def patched_supportdoc_fetching(replacement=None, exc=None):
 
     This is to allow easier testing.
     """
-    def raise_exception(*args, **kwargs):
-        raise exc
+    def raise_exception(*_args, **_kwargs):
+        raise exc  # pylint: disable=E0702
 
     if exc is not None:
         replacement = raise_exception
