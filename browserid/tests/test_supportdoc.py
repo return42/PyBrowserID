@@ -1,12 +1,16 @@
+# pylint: disable=C0103
+
 import json
 import socket
+import unittest
 
 from mock import Mock, patch
 from requests.exceptions import RequestException
 
 from browserid.supportdoc import fetch_support_document, SupportDocumentManager
-from browserid.errors import ConnectionError, InvalidIssuerError
-from browserid.tests.support import unittest
+from browserid.errors import InvalidIssuerError
+from browserid.errors import ConnectionError # pylint: disable=W0622
+
 from browserid.tests.support import (fetch_support_document as
         patched_support_document)
 

@@ -2,20 +2,20 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import sys
 import json
 import collections
 import threading
 import time
 
-if sys.version_info > (3,):
-    from urllib.parse import urljoin
-else:
-    from urlparse import urljoin  # NOQA
+from six.moves import urllib
 
 from browserid import netutils
-from browserid.errors import (ConnectionError,
-                              InvalidIssuerError)
+
+from browserid.errors import (  # pylint: disable=W0622
+    ConnectionError
+    , InvalidIssuerError
+    , )
+
 
 WELL_KNOWN_URL = "/.well-known/browserid"
 
@@ -219,7 +219,9 @@ def fetch_support_document(hostname, well_known_url=None, verify=None):
     # Try to find the support document.  If it can't be found then we
     # raise an InvalidIssuerError.  Any other connection-related
     # errors are passed back up to the caller.
-    response = netutils.get(urljoin(hostname, well_known_url), verify=verify)
+    response = netutils.get(
+        urllib.parse.urljoin(hostname, well_known_url)
+        , verify=verify)
     if response.status_code == 200:
         try:
             data = json.loads(response.text)
@@ -229,7 +231,8 @@ def fetch_support_document(hostname, well_known_url=None, verify=None):
     else:
         # The well-known file was not found, try falling back to
         # just "/pk".
-        response = netutils.get(urljoin(hostname, '/pk'), verify=verify)
+        response = netutils.get(
+            urllib.parse.urljoin(hostname, '/pk'), verify=verify)
         if response.status_code == 200:
             try:
                 key = json.loads(response.text)
