@@ -26,9 +26,10 @@ NAME     = 'PyBrowserID'
 
 REQUIRES = ['requests', 'six']
 
-EXTRAS_REQUIRE = { 'memcache': ['python-memcached']}
-
-TESTS_REQUIRES = ['mock']
+EXTRAS_REQUIRE = {
+    'memcache'  : ['python-memcached']
+    , 'test'    : ['mock']    # https://github.com/pypa/pip/issues/1197
+}
 
 META_FILE        = read_file('browserid/__init__.py')
 LONG_DESCRIPTION = [ read_file(n) for n in ['README.rst', 'CHANGES.txt']]
@@ -46,8 +47,6 @@ setup(name                   = NAME
       , include_package_data = True
       , install_requires     = REQUIRES
       , extras_require       = EXTRAS_REQUIRE
-      # unfortunately test is not supported by pip (only 'setup.py test')
-      , tests_require        = TESTS_REQUIRES
       , test_suite           = NAME
       , zip_safe             = False
       , classifiers          = [
